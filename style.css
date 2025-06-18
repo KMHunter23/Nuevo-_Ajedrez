@@ -31,3 +31,10 @@ body {
   background-color: yellow;
   color: black;
 }
+
+
+.amenaza {
+  background-color: crimson;
+  color: white;
+  opacity: 0.7; /* opcional: da un efecto más visual */
+}
