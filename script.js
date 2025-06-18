@@ -54,3 +54,48 @@ tablero.addEventListener("click", e => {
 });
 
 actualizarTablero();
+
+function actualizarTablero() {
+  document.querySelectorAll(".celda").forEach(celda => {
+    celda.innerHTML = "";
+    celda.classList.remove("destino", "peon", "amenaza");
+  });
+
+  // Marcar destinos posibles
+  for (let fila = 0; fila < filas; fila++) {
+    for (let col = 0; col < columnas; col++) {
+      const index = fila * columnas + col;
+      const celda = tablero.children[index];
+
+      if (esMovimientoValido(fila, col)) {
+        celda.classList.add("destino");
+
+        // Ahora marcamos las celdas alrededor del destino como amenaza
+        for (let df = -1; df <= 1; df++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            const af = fila + df;
+            const ac = col + dc;
+
+            if (
+              af >= 0 && af < filas &&
+              ac >= 0 && ac < columnas &&
+              !(af === fila && ac === col)
+            ) {
+              const amenazaIndex = af * columnas + ac;
+              const celdaAmenaza = tablero.children[amenazaIndex];
+              if (!celdaAmenaza.classList.contains("destino")) {
+                celdaAmenaza.classList.add("amenaza");
+              }
+            }
+          }
+        }
+      }
+
+      if (fila === peonFila && col === peonCol) {
+        celda.innerHTML = "♟";
+        celda.classList.add("peon");
+      }
+    }
+  }
+}
+
