@@ -23,7 +23,7 @@
     }
 
     .celda {
-      background-color: #2e7d32; /* verde oscuro */
+      background-color: #2e7d32;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -43,7 +43,7 @@
 
     .amenaza {
       outline: 2px dashed red;
-      opacity: 0.8;
+      outline-offset: -4px;
     }
   </style>
 </head>
@@ -59,6 +59,7 @@
     let peonFila = 3;
     let peonCol = 3;
 
+    // Crear el tablero
     for (let fila = 0; fila < filas; fila++) {
       for (let col = 0; col < columnas; col++) {
         const celda = document.createElement("div");
@@ -74,11 +75,15 @@
     }
 
     function actualizarTablero() {
+      // Limpiar el tablero
       document.querySelectorAll(".celda").forEach(celda => {
         celda.innerHTML = "";
         celda.classList.remove("destino", "peon", "amenaza");
       });
 
+      const celdasAmenaza = new Set();
+
+      // Marcar destinos y amenazas
       for (let fila = 0; fila < filas; fila++) {
         for (let col = 0; col < columnas; col++) {
           const index = fila * columnas + col;
@@ -87,34 +92,41 @@
           if (esMovimientoValido(fila, col)) {
             celda.classList.add("destino");
 
+            // Marcar alrededor como amenaza
             for (let df = -1; df <= 1; df++) {
               for (let dc = -1; dc <= 1; dc++) {
                 const af = fila + df;
                 const ac = col + dc;
-
                 if (
                   af >= 0 && af < filas &&
                   ac >= 0 && ac < columnas &&
                   !(af === fila && ac === col)
                 ) {
                   const amenazaIndex = af * columnas + ac;
-                  const celdaAmenaza = tablero.children[amenazaIndex];
-                  if (!celdaAmenaza.classList.contains("destino")) {
-                    celdaAmenaza.classList.add("amenaza");
-                  }
+                  celdasAmenaza.add(amenazaIndex);
                 }
               }
             }
           }
-
-          if (fila === peonFila && col === peonCol) {
-            celda.innerHTML = "♟";
-            celda.classList.add("peon");
-          }
         }
       }
+
+      // Aplicar amenazas (evitando celdas destino)
+      celdasAmenaza.forEach(index => {
+        const celda = tablero.children[index];
+        if (!celda.classList.contains("destino")) {
+          celda.classList.add("amenaza");
+        }
+      });
+
+      // Colocar el peón
+      const indexPeon = peonFila * columnas + peonCol;
+      const celdaPeon = tablero.children[indexPeon];
+      celdaPeon.innerHTML = "♟";
+      celdaPeon.classList.add("peon");
     }
 
+    // Evento para mover el peón
     tablero.addEventListener("click", e => {
       const celda = e.target;
       const fila = parseInt(celda.dataset.fila);
@@ -129,6 +141,5 @@
 
     actualizarTablero();
   </script>
-
 </body>
 </html>
