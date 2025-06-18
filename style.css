@@ -1,0 +1,20 @@
+body {
+  background-color: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#tablero {
+  display: grid;
+  grid-template-columns: repeat(8, 60px);
+  grid-template-rows: repeat(8, 60px);
+  border: 2px solid black;
+}
+
+.celda {
+  background-color: #2e7d32; /* Verde oscuro */
+  border: 1px solid black;
+  box-sizing: border-box;
+}
