@@ -3,20 +3,21 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: #222;
   margin: 0;
+  background: #222;
 }
 
 #tablero {
+  display: grid;
   grid-template-columns: repeat(8, 60px);
   grid-template-rows: repeat(8, 60px);
-  gap: 1px; /* espacio entre celdas para la cuadrícula */
-  background-color: black; /* el fondo se ve como líneas de la cuadrícula */
-  padding: 1px; /* evita que el primer borde se pierda */
+  gap: 2px; /* el espacio entre celdas es la cuadrícula */
+  background-color: black; /* color de la cuadrícula */
+  padding: 2px; /* que se vea el borde exterior negro */
 }
 
 .celda {
-  background-color: #2e7d32; /* verde oscuro */
+  background-color: #2e7d32;
   display: flex;
   justify-content: center;
   align-items: center;
