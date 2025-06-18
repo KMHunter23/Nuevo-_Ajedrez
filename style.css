@@ -1,4 +1,3 @@
-```
 body {
   display: flex;
   justify-content: center;
@@ -9,6 +8,7 @@ body {
 }
 
 #tablero {
+  display: grid;
   grid-template-columns: repeat(8, 60px);
   grid-template-rows: repeat(8, 60px);
   gap: 1px; /* espacio entre celdas para la cuadrícula */
@@ -25,4 +25,3 @@ body {
   color: white;
   cursor: pointer;
 }
-```
