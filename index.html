@@ -2,11 +2,105 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Tablero Verde</title>
+  <title>Nuevo Ajedrez</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #222;
+      margin: 0;
+    }
+
+    #tablero {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 2px;
+      background-color: black;
+      padding: 2px;
+    }
+
+    .celda {
+      background-color: #2e7d32;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .destino {
+      outline: 2px solid yellow;
+    }
+
+    .peon {
+      background-color: #1b5e20;
+    }
+  </style>
 </head>
 <body>
   <div id="tablero"></div>
-  <script src="script.js"></script>
+
+  <script>
+    const tablero = document.getElementById("tablero");
+    const filas = 8;
+    const columnas = 8;
+
+    let peonFila = 3;
+    let peonCol = 3;
+
+    for (let fila = 0; fila < filas; fila++) {
+      for (let col = 0; col < columnas; col++) {
+        const celda = document.createElement("div");
+        celda.classList.add("celda");
+        celda.dataset.fila = fila;
+        celda.dataset.col = col;
+        tablero.appendChild(celda);
+      }
+    }
+
+    function esMovimientoValido(fila, col) {
+      return Math.abs(fila - peonFila) <= 1 && Math.abs(col - peonCol) <= 1;
+    }
+
+    function actualizarTablero() {
+      document.querySelectorAll(".celda").forEach(celda => {
+        celda.innerHTML = "";
+        celda.classList.remove("destino", "peon");
+
+        const fila = parseInt(celda.dataset.fila);
+        const col = parseInt(celda.dataset.col);
+
+        if (esMovimientoValido(fila, col)) {
+          celda.classList.add("destino");
+        }
+
+        if (fila === peonFila && col === peonCol) {
+          celda.innerHTML = "♟";
+          celda.classList.add("peon");
+        }
+      });
+    }
+
+    tablero.addEventListener("click", e => {
+      const celda = e.target;
+      if (!celda.classList.contains("celda")) return;
+
+      const fila = parseInt(celda.dataset.fila);
+      const col = parseInt(celda.dataset.col);
+
+      if (esMovimientoValido(fila, col)) {
+        peonFila = fila;
+        peonCol = col;
+        actualizarTablero();
+      }
+    });
+
+    actualizarTablero();
+  </script>
 </body>
 </html>
