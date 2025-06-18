@@ -1,115 +1,165 @@
-<script>
-  const tablero = document.getElementById("tablero");
-  const filas = 8;
-  const columnas = 8;
-
-  let peonFila = 3;
-  let peonCol = 3;
-
-  // Posición inicial del enemigo
-  let enemigoFila = 6;
-  let enemigoCol = 6;
-  let enemigoVivo = true;
-
-  // Crear el tablero
-  for (let fila = 0; fila < filas; fila++) {
-    for (let col = 0; col < columnas; col++) {
-      const celda = document.createElement("div");
-      celda.classList.add("celda");
-      celda.dataset.fila = fila;
-      celda.dataset.col = col;
-      tablero.appendChild(celda);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Peón Bélico</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #222;
+      margin: 0;
     }
-  }
 
-  function esMovimientoValido(fila, col) {
-    return Math.abs(fila - peonFila) <= 1 && Math.abs(col - peonCol) <= 1;
-  }
+    #tablero {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 1px;
+      background-color: black;
+      padding: 1px;
+    }
 
-  function actualizarTablero() {
-    document.querySelectorAll(".celda").forEach(celda => {
-      celda.innerHTML = "";
-      celda.classList.remove("destino", "peon", "amenaza", "enemigo");
-    });
+    .celda {
+      background-color: #2e7d32;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+    }
 
-    const celdasAmenaza = new Set();
+    .destino {
+      background-color: yellow;
+      color: black;
+    }
+
+    .amenaza {
+      outline: 2px dashed red;
+    }
+
+    .peon {
+      font-weight: bold;
+    }
+
+    .enemigo {
+      font-weight: bold;
+      color: crimson;
+    }
+  </style>
+</head>
+<body>
+  <div id="tablero"></div>
+
+  <script>
+    const tablero = document.getElementById("tablero");
+    const filas = 8;
+    const columnas = 8;
+
+    let peonFila = 3;
+    let peonCol = 3;
+
+    let enemigoFila = 6;
+    let enemigoCol = 6;
+    let enemigoVivo = true;
 
     for (let fila = 0; fila < filas; fila++) {
       for (let col = 0; col < columnas; col++) {
-        const index = fila * columnas + col;
-        const celda = tablero.children[index];
+        const celda = document.createElement("div");
+        celda.classList.add("celda");
+        celda.dataset.fila = fila;
+        celda.dataset.col = col;
+        tablero.appendChild(celda);
+      }
+    }
 
-        if (esMovimientoValido(fila, col)) {
-          celda.classList.add("destino");
+    function esMovimientoValido(fila, col) {
+      return Math.abs(fila - peonFila) <= 1 && Math.abs(col - peonCol) <= 1;
+    }
 
-          // Marcar amenazas alrededor
-          for (let df = -1; df <= 1; df++) {
-            for (let dc = -1; dc <= 1; dc++) {
-              const af = fila + df;
-              const ac = col + dc;
+    function actualizarTablero() {
+      document.querySelectorAll(".celda").forEach(celda => {
+        celda.innerHTML = "";
+        celda.classList.remove("destino", "peon", "amenaza", "enemigo");
+      });
 
-              if (
-                af >= 0 && af < filas &&
-                ac >= 0 && ac < columnas &&
-                !(af === fila && ac === col)
-              ) {
-                const amenazaIndex = af * columnas + ac;
-                celdasAmenaza.add(amenazaIndex);
+      const celdasAmenaza = new Set();
+
+      for (let fila = 0; fila < filas; fila++) {
+        for (let col = 0; col < columnas; col++) {
+          const index = fila * columnas + col;
+          const celda = tablero.children[index];
+
+          if (esMovimientoValido(fila, col)) {
+            celda.classList.add("destino");
+
+            for (let df = -1; df <= 1; df++) {
+              for (let dc = -1; dc <= 1; dc++) {
+                const af = fila + df;
+                const ac = col + dc;
+
+                if (
+                  af >= 0 && af < filas &&
+                  ac >= 0 && ac < columnas &&
+                  !(af === fila && ac === col)
+                ) {
+                  const amenazaIndex = af * columnas + ac;
+                  celdasAmenaza.add(amenazaIndex);
+                }
               }
             }
           }
         }
       }
+
+      celdasAmenaza.forEach(index => {
+        const celda = tablero.children[index];
+        if (!celda.classList.contains("destino")) {
+          celda.classList.add("amenaza");
+        }
+      });
+
+      if (enemigoVivo) {
+        const enemigoIndex = enemigoFila * columnas + enemigoCol;
+        const celdaEnemigo = tablero.children[enemigoIndex];
+        celdaEnemigo.innerHTML = "😈";
+        celdaEnemigo.classList.add("enemigo");
+      }
+
+      const indexPeon = peonFila * columnas + peonCol;
+      const celdaPeon = tablero.children[indexPeon];
+      celdaPeon.innerHTML = "♟";
+      celdaPeon.classList.add("peon");
     }
 
-    // Aplicar amenazas
-    celdasAmenaza.forEach(index => {
-      const celda = tablero.children[index];
-      if (!celda.classList.contains("destino")) {
-        celda.classList.add("amenaza");
+    tablero.addEventListener("click", e => {
+      const celda = e.target;
+      const fila = parseInt(celda.dataset.fila);
+      const col = parseInt(celda.dataset.col);
+
+      if (esMovimientoValido(fila, col)) {
+        peonFila = fila;
+        peonCol = col;
+        actualizarTablero();
+        return;
+      }
+
+      if (
+        fila === enemigoFila &&
+        col === enemigoCol &&
+        celda.classList.contains("amenaza") &&
+        enemigoVivo
+      ) {
+        enemigoVivo = false;
+        actualizarTablero();
       }
     });
 
-    // Colocar al enemigo si sigue vivo
-    if (enemigoVivo) {
-      const enemigoIndex = enemigoFila * columnas + enemigoCol;
-      const celdaEnemigo = tablero.children[enemigoIndex];
-      celdaEnemigo.innerHTML = "😈";
-      celdaEnemigo.classList.add("enemigo");
-    }
-
-    // Colocar al peón
-    const indexPeon = peonFila * columnas + peonCol;
-    const celdaPeon = tablero.children[indexPeon];
-    celdaPeon.innerHTML = "♟";
-    celdaPeon.classList.add("peon");
-  }
-
-  // Click para mover o atacar
-  tablero.addEventListener("click", e => {
-    const celda = e.target;
-    const fila = parseInt(celda.dataset.fila);
-    const col = parseInt(celda.dataset.col);
-
-    // Si clickea una celda destino: mover peón
-    if (esMovimientoValido(fila, col)) {
-      peonFila = fila;
-      peonCol = col;
-      actualizarTablero();
-      return;
-    }
-
-    // Si clickea al enemigo en una celda amenazada: eliminar enemigo
-    if (
-      fila === enemigoFila &&
-      col === enemigoCol &&
-      celda.classList.contains("amenaza") &&
-      enemigoVivo
-    ) {
-      enemigoVivo = false;
-      actualizarTablero();
-    }
-  });
-
-  actualizarTablero();
-</script>
+    actualizarTablero();
+  </script>
+</body>
+</html>
