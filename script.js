@@ -2,7 +2,7 @@ const tablero = document.getElementById("tablero");
 const filas = 8;
 const columnas = 8;
 
-// Posición inicial del peón (ejemplo: fila 3, col 3)
+// Posición inicial del peón
 let peonFila = 3;
 let peonCol = 3;
 
@@ -17,51 +17,18 @@ for (let fila = 0; fila < filas; fila++) {
   }
 }
 
-function actualizarTablero() {
-  document.querySelectorAll(".celda").forEach(celda => {
-    celda.innerHTML = "";
-    celda.classList.remove("destino");
-
-    const fila = parseInt(celda.dataset.fila);
-    const col = parseInt(celda.dataset.col);
-
-    // Marcar posibles destinos
-    if (Math.abs(fila - peonFila) <= 1 && Math.abs(col - peonCol) <= 1) {
-      celda.classList.add("destino");
-    }
-
-    // Colocar el peón
-    if (fila === peonFila && col === peonCol) {
-      celda.innerHTML = "♟";
-      celda.classList.add("peon");
-    } else {
-      celda.classList.remove("peon");
-    }
-  });
+// Función que determina si una celda es un destino válido
+function esMovimientoValido(fila, col) {
+  return Math.abs(fila - peonFila) <= 1 && Math.abs(col - peonCol) <= 1;
 }
 
-// Evento de movimiento
-tablero.addEventListener("click", e => {
-  const celda = e.target;
-  const fila = parseInt(celda.dataset.fila);
-  const col = parseInt(celda.dataset.col);
-
-  if (Math.abs(fila - peonFila) <= 1 && Math.abs(col - peonCol) <= 1) {
-    peonFila = fila;
-    peonCol = col;
-    actualizarTablero();
-  }
-});
-
-actualizarTablero();
-
+// Actualiza el estado del tablero visualmente
 function actualizarTablero() {
   document.querySelectorAll(".celda").forEach(celda => {
     celda.innerHTML = "";
     celda.classList.remove("destino", "peon", "amenaza");
   });
 
-  // Marcar destinos posibles
   for (let fila = 0; fila < filas; fila++) {
     for (let col = 0; col < columnas; col++) {
       const index = fila * columnas + col;
@@ -70,7 +37,7 @@ function actualizarTablero() {
       if (esMovimientoValido(fila, col)) {
         celda.classList.add("destino");
 
-        // Ahora marcamos las celdas alrededor del destino como amenaza
+        // Marcar celdas alrededor como amenaza
         for (let df = -1; df <= 1; df++) {
           for (let dc = -1; dc <= 1; dc++) {
             const af = fila + df;
@@ -91,6 +58,7 @@ function actualizarTablero() {
         }
       }
 
+      // Colocar el peón
       if (fila === peonFila && col === peonCol) {
         celda.innerHTML = "♟";
         celda.classList.add("peon");
@@ -99,3 +67,18 @@ function actualizarTablero() {
   }
 }
 
+// Mover el peón al hacer clic en una celda válida
+tablero.addEventListener("click", e => {
+  const celda = e.target;
+  const fila = parseInt(celda.dataset.fila);
+  const col = parseInt(celda.dataset.col);
+
+  if (esMovimientoValido(fila, col)) {
+    peonFila = fila;
+    peonCol = col;
+    actualizarTablero();
+  }
+});
+
+// Inicializar
+actualizarTablero();
