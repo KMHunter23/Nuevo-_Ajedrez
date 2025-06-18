@@ -1,1 +1,0 @@
-# Nuevo-_Ajedrez
